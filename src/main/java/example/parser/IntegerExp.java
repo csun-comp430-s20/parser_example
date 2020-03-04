@@ -1,3 +1,5 @@
+package example.parser;
+
 public class IntegerExp implements Exp {
     public final int value;
 

@@ -1,3 +1,7 @@
+package example.parser;
+
+import example.tokenizer.*;
+
 public class Parser {
     private final Token[] tokens;
     
@@ -18,20 +22,9 @@ public class Parser {
     private void assertTokenIs(final int position, final Token token) throws ParseException {
         if (!tokens[position].equals(token)) {
             throw new ParseException("Expected: " + token.toString() +
-                                     "Received: " tokens[position].toString());
+                                     "Received: " + tokens[position].toString());
         }
-    }
-
-    // public ParseResult<E> parseE(final int startPos) throws ParseException {
-    //     try {
-    //         final ParseResult<E> alpha = parseAlpha(startPos);
-    //         return alpha;
-    //     } catch (ParseException e) {
-    //         return parseBeta(startPos);
-    //     }
-    // }
-            
-    public ParseResult<Exp> parseAdditiveExp(final int startPos) throws ParseException { ... }
+    } // assertTokenIs
 
     public ParseResult<Exp> parsePrimary(final int startPos) throws ParseException {
         if (tokens[startPos] instanceof VariableToken) {
@@ -49,7 +42,7 @@ public class Parser {
             return new ParseResult<Exp>(inner.result,
                                         inner.nextPos + 1);
         }
-    }
+    } // parsePrimary
     
     public ParseResult<Exp> parseExp(final int startPos) throws ParseException {
         if (tokens[startPos] instanceof IfToken) {
@@ -64,5 +57,9 @@ public class Parser {
         } else {
             return parseAdditiveExp(startPos);
         }
-    }
+    } // parseExp
+
+    public ParseResult<Exp> parseAdditiveExp(final int startPos) throws ParseException {
+        throw new ParseException("parseAdditiveExp is not yet implemented");
+    } // parseAdditiveExp
 }

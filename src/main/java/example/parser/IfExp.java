@@ -1,5 +1,5 @@
-// sealed trait Exp
-// case class IfExp(e1: Exp, e2: Exp, e3: Exp) extends Exp
+package example.parser;
+
 public class IfExp implements Exp {
     public final Exp guard;
     public final Exp trueBranch;
