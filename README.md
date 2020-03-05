@@ -37,6 +37,6 @@ a is an additive expression
 p is a primary expression
 
 e ::= if (e_1) e_2 else e_3 | a
-a ::= p (+ a)*
+a ::= p (+ p)*
 p ::= x | i | ( e )
 ```
