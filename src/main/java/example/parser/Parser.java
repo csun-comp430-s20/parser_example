@@ -22,20 +22,30 @@ public class Parser {
         }
     }
 
+    private Token readToken(final int position) throws ParseException {
+        if (position < tokens.length) {
+            return tokens[position];
+        } else {
+            throw new ParseException("Position out of bounds: " + position);
+        }
+    } // readToken
+    
     private void assertTokenIs(final int position, final Token token) throws ParseException {
-        if (!tokens[position].equals(token)) {
+        final Token tokenHere = readToken(position);
+        if (!tokenHere.equals(token)) {
             throw new ParseException("Expected: " + token.toString() +
                                      "Received: " + tokens[position].toString());
         }
     } // assertTokenIs
 
     private ParseResult<Exp> parsePrimary(final int startPos) throws ParseException {
-        if (tokens[startPos] instanceof VariableToken) {
-            final VariableToken asVar = (VariableToken)tokens[startPos];
+        final Token tokenHere = readToken(startPos);
+        if (tokenHere instanceof VariableToken) {
+            final VariableToken asVar = (VariableToken)tokenHere;
             return new ParseResult<Exp>(new VariableExp(asVar.name),
                                         startPos + 1);
-        } else if (tokens[startPos] instanceof IntegerToken) {
-            final IntegerToken asInt = (IntegerToken)tokens[startPos];
+        } else if (tokenHere instanceof IntegerToken) {
+            final IntegerToken asInt = (IntegerToken)tokenHere;
             return new ParseResult<Exp>(new IntegerExp(asInt.value),
                                         startPos + 1);
         } else {
@@ -48,7 +58,7 @@ public class Parser {
     } // parsePrimary
     
     private ParseResult<Exp> parseExp(final int startPos) throws ParseException {
-        if (tokens[startPos] instanceof IfToken) {
+        if (readToken(startPos) instanceof IfToken) {
             assertTokenIs(startPos + 1, new LeftParenToken());
             final ParseResult<Exp> guard = parseExp(startPos + 2);
             assertTokenIs(guard.nextPos, new RightParenToken());
