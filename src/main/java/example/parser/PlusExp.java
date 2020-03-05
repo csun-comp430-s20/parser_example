@@ -8,4 +8,24 @@ public class PlusExp implements Exp {
         this.left = left;
         this.right = right;
     }
-}
+
+    @Override
+    public boolean equals(final Object other) {
+        if (other instanceof PlusExp) {
+            final PlusExp otherPlus = (PlusExp)other;
+            return (left.equals(otherPlus.left) &&
+                    right.equals(otherPlus.right));
+        } else {
+            return false;
+        }
+    } // equals
+
+    @Override
+    public String toString() {
+        return ("(" +
+                left.toString() +
+                " + " +
+                right.toString() +
+                ")");
+    } // toString
+} // PlusExp

@@ -1,5 +1,8 @@
 package example.parser;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import example.tokenizer.*;
 
 public class Parser {
@@ -26,7 +29,7 @@ public class Parser {
         }
     } // assertTokenIs
 
-    public ParseResult<Exp> parsePrimary(final int startPos) throws ParseException {
+    private ParseResult<Exp> parsePrimary(final int startPos) throws ParseException {
         if (tokens[startPos] instanceof VariableToken) {
             final VariableToken asVar = (VariableToken)tokens[startPos];
             return new ParseResult<Exp>(new VariableExp(asVar.name),
@@ -44,7 +47,7 @@ public class Parser {
         }
     } // parsePrimary
     
-    public ParseResult<Exp> parseExp(final int startPos) throws ParseException {
+    private ParseResult<Exp> parseExp(final int startPos) throws ParseException {
         if (tokens[startPos] instanceof IfToken) {
             assertTokenIs(startPos + 1, new LeftParenToken());
             final ParseResult<Exp> guard = parseExp(startPos + 2);
@@ -59,7 +62,41 @@ public class Parser {
         }
     } // parseExp
 
-    public ParseResult<Exp> parseAdditiveExp(final int startPos) throws ParseException {
-        throw new ParseException("parseAdditiveExp is not yet implemented");
+    private ParseResult<List<Exp>> parseAdditiveExpHelper(int curPos) {
+        final List<Exp> result = new ArrayList<Exp>();
+
+        while (curPos < tokens.length) {
+            try {
+                assertTokenIs(curPos, new PlusToken());
+                final ParseResult<Exp> currentPrimary = parsePrimary(curPos + 1);
+                result.add(currentPrimary.result);
+                curPos = currentPrimary.nextPos;
+            } catch (final ParseException e) {
+                break;
+            }
+        }
+
+        return new ParseResult<List<Exp>>(result, curPos);
+    } // parseAdditiveExpHelper
+            
+    private ParseResult<Exp> parseAdditiveExp(final int startPos) throws ParseException {
+        final ParseResult<Exp> initialPrimary = parsePrimary(startPos);
+        final ParseResult<List<Exp>> list = parseAdditiveExpHelper(initialPrimary.nextPos);
+        Exp finalResult = initialPrimary.result;
+
+        for (final Exp current : list.result) {
+            finalResult = new PlusExp(finalResult, current);
+        }
+
+        return new ParseResult<Exp>(finalResult, list.nextPos);
     } // parseAdditiveExp
+
+    public Exp parseToplevelExp() throws ParseException {
+        final ParseResult<Exp> toplevel = parseExp(0);
+        if (toplevel.nextPos == tokens.length) {
+            return toplevel.result;
+        } else {
+            throw new ParseException("tokens remaining at end");
+        }
+    } // parseToplevelExp
 }
